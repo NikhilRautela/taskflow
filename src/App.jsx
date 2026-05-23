@@ -1,9 +1,16 @@
-function App() {
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
+import Tasks from './pages/Tasks'
+
+export default function App() {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600">TaskFlow 🚀</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tasks" element={<Tasks />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
