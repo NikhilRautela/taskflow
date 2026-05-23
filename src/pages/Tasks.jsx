@@ -1,41 +1,44 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+
+const API = 'http://localhost:5000'
 
 export default function Tasks() {
   const navigate = useNavigate()
-
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Setup project', status: 'Done' },
-    { id: 2, title: 'Build login page', status: 'Done' },
-    { id: 3, title: 'Build dashboard', status: 'In Progress' },
-    { id: 4, title: 'Build tasks page', status: 'In Progress' },
-    { id: 5, title: 'Connect backend', status: 'To Do' },
-  ])
-
+  const [tasks, setTasks] = useState([])
   const [newTask, setNewTask] = useState('')
+
+  // Fetch tasks from backend when page loads
+  useEffect(() => {
+    axios.get(`${API}/api/tasks`)
+      .then((res) => setTasks(res.data))
+      .catch((err) => console.log(err))
+  }, [])
 
   function addTask() {
     if (newTask.trim() === '') return
-    setTasks([...tasks, {
-      id: tasks.length + 1,
-      title: newTask,
-      status: 'To Do'
-    }])
-    setNewTask('')
+    axios.post(`${API}/api/tasks`, { title: newTask })
+      .then((res) => {
+        setTasks([...tasks, res.data])
+        setNewTask('')
+      })
   }
 
   function deleteTask(id) {
-    setTasks(tasks.filter((task) => task.id !== id))
+    axios.delete(`${API}/api/tasks/${id}`)
+      .then(() => {
+        setTasks(tasks.filter((task) => task.id !== id))
+      })
   }
 
   function completeTask(id) {
-    setTasks(tasks.map((task) => {
-      if (task.id === id) {
-        return { ...task, status: 'Done' }
-      } else {
-        return task
-      }
-    }))
+    axios.patch(`${API}/api/tasks/${id}`)
+      .then(() => {
+        setTasks(tasks.map((task) =>
+          task.id === id ? { ...task, status: 'Done' } : task
+        ))
+      })
   }
 
   return (
