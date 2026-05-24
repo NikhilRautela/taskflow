@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-const API = 'http://localhost:5000'
+const API = 'https://taskflow-backend-fxjf.onrender.com'
 
 export default function Dashboard() {
   const navigate = useNavigate()
