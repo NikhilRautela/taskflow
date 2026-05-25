@@ -3,24 +3,26 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 const API = 'https://taskflow-backend-fxjf.onrender.com'
-const token = localStorage.getItem('token')
-const config = { headers: { Authorization: `Bearer ${token}` } }
 
 export default function Tasks() {
   const navigate = useNavigate()
   const [tasks, setTasks] = useState([])
   const [newTask, setNewTask] = useState('')
 
-  // Fetch tasks from backend when page loads
+  function getConfig() {
+    const token = localStorage.getItem('token')
+    return { headers: { Authorization: `Bearer ${token}` } }
+  }
+
   useEffect(() => {
-   axios.get(`${API}/api/tasks`, config)
+    axios.get(`${API}/api/tasks`, getConfig())
       .then((res) => setTasks(res.data))
       .catch((err) => console.log(err))
   }, [])
 
   function addTask() {
     if (newTask.trim() === '') return
-   axios.post(`${API}/api/tasks`, { title: newTask }, config)
+    axios.post(`${API}/api/tasks`, { title: newTask }, getConfig())
       .then((res) => {
         setTasks([...tasks, res.data])
         setNewTask('')
@@ -28,14 +30,14 @@ export default function Tasks() {
   }
 
   function deleteTask(id) {
-    axios.delete(`${API}/api/tasks/${id}`, config)
+    axios.delete(`${API}/api/tasks/${id}`, getConfig())
       .then(() => {
         setTasks(tasks.filter((task) => task.id !== id))
       })
   }
 
   function completeTask(id) {
-    axios.patch(`${API}/api/tasks/${id}`, {}, config)
+    axios.patch(`${API}/api/tasks/${id}`, {}, getConfig())
       .then(() => {
         setTasks(tasks.map((task) =>
           task.id === id ? { ...task, status: 'Done' } : task
@@ -116,7 +118,6 @@ export default function Tasks() {
             </div>
           ))}
         </div>
-
       </div>
     </div>
   )
